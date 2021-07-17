@@ -139,4 +139,9 @@ cython_debug/
 
 .vscode
 
+books
+images
+
+test.py
+
 
