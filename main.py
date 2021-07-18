@@ -19,7 +19,7 @@ def download_txt(book_number, download_url, filename, folder="books"):
     response = requests.get(download_url, params=params)
     response.raise_for_status()
     check_for_redirect(response)
-    with open (f"{os.path.join(folder, filename)}.txt", "wt") as file:
+    with open (f"{os.path.join(folder, filename)}.txt", "w") as file:
         file.write(response.text)
 
 
