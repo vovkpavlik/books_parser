@@ -1,6 +1,6 @@
 import argparse
 import os
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import urljoin, urlsplit, unquote
 
 import requests
 import urllib3
@@ -27,7 +27,7 @@ def download_img(img_url, filename, folder="images"):
     response = requests.get(img_url)
     response.raise_for_status()
     check_for_redirect(response)
-    extension = os.path.splitext(urlsplit(img_url)[2])[-1]
+    _, extension = os.path.splitext(urlsplit(unquote(img_url)).path)
     with open (f"{os.path.join(folder, filename)}{extension}", "wb") as file:
         file.write(response.content)    
 
