@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 from urllib3.exceptions import HTTPError
 
-from parse_tululu_category import get_books_id
+from parse_tululu_category import get_books_id, get_books_url
 
 
 def check_for_redirect(response):
@@ -32,22 +32,6 @@ def download_img(img_url, filename, folder="images"):
     _, extension = os.path.splitext(urlsplit(unquote(img_url)).path)
     with open (f"{os.path.join(folder, filename)}{extension}", "wb") as file:
         file.write(response.content)    
-
-
-def get_books_url(page_url):   
-    response = requests.get(page_url)
-    response.raise_for_status()
-
-    soup = BeautifulSoup(response.text, 'lxml')
-    
-    books_href = [
-        book.find("td").find("a")["href"] for book in
-        soup.find(id="content").find_all("table")
-    ]
-    
-    books_url = [urljoin("https://tululu.org", book) for book in books_href]
-  
-    return books_url
 
 
 def parse_book_page(book_url):
@@ -88,31 +72,28 @@ def main():
     urllib3.disable_warnings()
 
     parser = argparse.ArgumentParser(description="Качает книжки с сайта тулулу")
-    parser.add_argument('--start_id', default=1, help="стартовая страница", type=int)
-    parser.add_argument('--end_id',default=11, help="конечная страница", type=int)
+    parser.add_argument('--start_page', default=1, help="стартовая страница", type=int)
+    parser.add_argument('--end_page',default=11, help="конечная страница", type=int)
     args = parser.parse_args()
 
     os.makedirs("books", exist_ok=True)
     os.makedirs("images", exist_ok=True)
 
-    fantastic_genre_url = "https://tululu.org/l55/"
-    books_id = get_books_id(fantastic_genre_url)
-    for page in range(args.start_id, args.end_id+1):
-        fantastic_genre_url = f"https://tululu.org/l55/{page}"
-        books_id = get_books_id(fantastic_genre_url)
-        for book_id in books_id:
-            download_url = "https://tululu.org/txt.php" 
-            book_url = f"https://tululu.org/b{book_id}/"       
-            try:
-                print(parse_book_page(book_url))
-                book_info = parse_book_page(book_url)
-                img_url = book_info["img_url"]
-                book_title = f"{book_id}.{book_info['title']}"
-                filename = sanitize_filename(book_title)
-                # download_txt(book_id, download_url, filename)
-                # download_img(img_url, filename)
-            except HTTPError:
-                print("Такой книги не существует в природе")
+    books_id = get_books_id(args.start_page, args.end_page+1)
+
+    for book_id in books_id:
+        download_url = "https://tululu.org/txt.php" 
+        book_url = f"https://tululu.org/b{book_id}/"       
+        try:
+            print(parse_book_page(book_url))
+            book_info = parse_book_page(book_url)
+            img_url = book_info["img_url"]
+            book_title = f"{book_id}.{book_info['title']}"
+            filename = sanitize_filename(book_title)
+            # download_txt(book_id, download_url, filename)
+            # download_img(img_url, filename)
+        except HTTPError:
+            print("Такой книги не существует в природе")
 
 
 if __name__ == "__main__":
