@@ -1,7 +1,9 @@
 import argparse
 import os
 from urllib.parse import urljoin, urlsplit, unquote
+import json
 
+from pprint import pprint
 import requests
 import urllib3
 from bs4 import BeautifulSoup
@@ -79,21 +81,32 @@ def main():
     os.makedirs("books", exist_ok=True)
     os.makedirs("images", exist_ok=True)
 
-    books_id = get_books_id(args.start_page, args.end_page+1)
+    books_info = []
 
+    books_id = get_books_id(args.start_page, args.end_page+1)
+    
     for book_id in books_id:
         download_url = "https://tululu.org/txt.php" 
         book_url = f"https://tululu.org/b{book_id}/"       
         try:
-            print(parse_book_page(book_url))
             book_info = parse_book_page(book_url)
+            books_info.append(parse_book_page(book_url))
             img_url = book_info["img_url"]
             book_title = f"{book_id}.{book_info['title']}"
             filename = sanitize_filename(book_title)
-            # download_txt(book_id, download_url, filename)
-            # download_img(img_url, filename)
+            download_txt(book_id, download_url, filename)
+            download_img(img_url, filename)
         except HTTPError:
             print("Такой книги не существует в природе")
+    
+    with open("books_info.json", "a") as my_file:
+        json.dump(
+            books_info, 
+            my_file, 
+            sort_keys=True, 
+            indent=4, 
+            ensure_ascii=False
+        )
 
 
 if __name__ == "__main__":
