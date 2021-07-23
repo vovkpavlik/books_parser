@@ -77,8 +77,8 @@ def main():
     parser.add_argument("--texts_folder", default="books_texts", help="путь к текстам книг", type=str)
     parser.add_argument("--imgs_folder", default="books_images", help="путь к картинкам книг", type=str)
     parser.add_argument("--json_path", default=os.getcwd(), help="путь к json файлу с информацией о книгах", type=str)
-    parser.add_argument("--skip_imgs", action="store_true")
-    parser.add_argument("--skip_texts", action="store_true")
+    parser.add_argument("--skip_imgs", action="store_true", help="отменяет загрузку картинок")
+    parser.add_argument("--skip_texts", action="store_true", help="отменяет загрузку текстов")
     args = parser.parse_args()
 
     books_info = []
