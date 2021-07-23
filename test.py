@@ -1,33 +1,34 @@
-from pprint import pprint
-import json
+import requests
+from urllib.parse import urljoin
+from bs4 import BeautifulSoup
 
-book_info_1 = {
-    "title": "1",
-    "author": "2",
-    "genre": "3",
-    "comments": "4",
-    "img_url": "5"
-}
+book_url = "https://tululu.org/b9/"
+response = requests.get(book_url)
 
-book_info_2 = {
-    "title": "a",
-    "author": "b",
-    "genre": "c",
-    "comments": "d",
-    "img_url": "e"
-}
+response.raise_for_status()
 
-books_info = []
-books_info.append(book_info_1)
-books_info.append(book_info_2)
-pprint(books_info)
+soup = BeautifulSoup(response.text, 'lxml')
 
+genres = [
+    genre.text for genre in
+    soup.find("span", class_="d_book").find_all("a")
+]
 
-with open("books_info.json", "a") as my_file:
-    json.dump(
-        books_info, 
-        my_file, 
-        sort_keys=True, 
-        indent=4, 
-        ensure_ascii=False
-    )
+genres_2 = [
+    genre.text for genre in
+    soup.select("span.d_book a")
+]
+
+comments = [
+    comment.find("span", class_="black").text for comment in
+    soup.find_all("div", class_="texts")
+]
+
+comments_2 = soup.select("div.texts span.black")
+comments_3 = [
+    comment.text for comment in
+    soup.select("div.texts span.black")
+]
+
+print(comments)
+print(comments_3)
