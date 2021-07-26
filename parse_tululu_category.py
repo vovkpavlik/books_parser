@@ -13,8 +13,8 @@ def get_books_url(start_page, end_page):
         soup = BeautifulSoup(response.text, 'lxml')
 
         books_href = [
-            book.find("td").find("a")["href"] for book in
-            soup.find(id="content").find_all("table")
+            book_href.select_one("td a")["href"] for book_href in
+            soup.select("#content table")
         ]
        
         one_page_books_url = [urljoin("https://tululu.org", book) for book in books_href]
