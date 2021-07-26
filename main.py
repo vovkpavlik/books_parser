@@ -62,7 +62,8 @@ def parse_book_page(book_url):
         "author": author.strip(),
         "genre": genres,
         "comments": comments,
-        "img_url": img_url    
+        "img_url": img_url,
+        "files_path": f"{os.getcwd()}"
     }
 
     return book_info
@@ -94,8 +95,7 @@ def main():
             books_info.append(parse_book_page(book_url))
             img_url = book_info["img_url"]
             book_title = f"{book_id}.{book_info['title']}"
-            filename = sanitize_filename(book_title)
-            
+            filename = sanitize_filename(book_title)     
             if not args.skip_imgs:
                 os.makedirs(args.imgs_folder, exist_ok=True)
                 download_img(img_url, filename, args.imgs_folder)
