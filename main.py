@@ -22,9 +22,9 @@ def download_txt(book_id, download_url, filename, folder):
     response = requests.get(download_url, params=params)
     response.raise_for_status()
     check_for_redirect(response)
-    with open (f"{os.path.join(folder, filename)}.txt", "w") as file:
-        file.write(response.text)
     texts_path = f"{os.path.join(folder, filename)}.txt"
+    with open (texts_path, "w") as file:
+        file.write(response.text)
     return texts_path
 
 
@@ -33,9 +33,9 @@ def download_img(img_url, filename, folder):
     response.raise_for_status()
     check_for_redirect(response)
     _, extension = os.path.splitext(urlsplit(unquote(img_url)).path)
-    with open (f"{os.path.join(folder, filename)}{extension}", "wb") as file:
-        file.write(response.content)    
     img_path = f"{os.path.join(folder, filename)}{extension}"
+    with open (img_path, "wb") as file:
+        file.write(response.content)    
     return img_path
 
 
