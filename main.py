@@ -24,6 +24,8 @@ def download_txt(book_id, download_url, filename, folder):
     check_for_redirect(response)
     with open (f"{os.path.join(folder, filename)}.txt", "w") as file:
         file.write(response.text)
+    texts_path = f"{os.path.join(folder, filename)}.txt"
+    return texts_path
 
 
 def download_img(img_url, filename, folder):
@@ -33,6 +35,8 @@ def download_img(img_url, filename, folder):
     _, extension = os.path.splitext(urlsplit(unquote(img_url)).path)
     with open (f"{os.path.join(folder, filename)}{extension}", "wb") as file:
         file.write(response.content)    
+    img_path = f"{os.path.join(folder, filename)}{extension}"
+    return img_path
 
 
 def parse_book_page(book_url):
@@ -63,7 +67,6 @@ def parse_book_page(book_url):
         "genre": genres,
         "comments": comments,
         "img_url": img_url,
-        "files_path": f"{os.getcwd()}"
     }
 
     return book_info
@@ -92,17 +95,18 @@ def main():
         
         try: 
             book_info = parse_book_page(book_url) 
-            books_info.append(book_info)
             img_url = book_info["img_url"]
             book_title = f"{book_id}.{book_info['title']}"
             filename = sanitize_filename(book_title)     
             if not args.skip_imgs:
                 os.makedirs(args.imgs_folder, exist_ok=True)
-                download_img(img_url, filename, args.imgs_folder)
+                img = download_img(img_url, filename, args.imgs_folder)
+                book_info.update({"imgs_path": os.path.join(os.getcwd(), img)})
             if not args.skip_texts:
                 os.makedirs(args.texts_folder, exist_ok=True)
-                download_txt(book_id, download_url, filename, args.texts_folder)
-
+                txt = download_txt(book_id, download_url, filename, args.texts_folder)
+                book_info.update({"texts_path": os.path.join(os.getcwd(), txt)})
+            books_info.append(book_info)
         except HTTPError:
             print("Такой книги не существует в природе")
 
