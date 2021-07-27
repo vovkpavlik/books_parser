@@ -118,10 +118,10 @@ def main():
 
     if args.json_path:
        os.makedirs(args.json_path, exist_ok=True) 
-    with open(os.path.join(args.json_path, "books_info.json"), "a") as my_file:
+    with open(os.path.join(args.json_path, "books_info.json"), "a") as file:
         json.dump(
             books_info, 
-            my_file, 
+            file, 
             sort_keys=True, 
             indent=4, 
             ensure_ascii=False
