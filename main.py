@@ -100,12 +100,12 @@ def main():
             filename = sanitize_filename(book_title)     
             if not args.skip_imgs:
                 os.makedirs(args.imgs_folder, exist_ok=True)
-                img = download_img(img_url, filename, args.imgs_folder)
-                book_info.update({"imgs_path": os.path.join(os.getcwd(), img)})
+                img_path = download_img(img_url, filename, args.imgs_folder)
+                book_info.update({"imgs_path": os.path.join(os.getcwd(), img_path)})
             if not args.skip_texts:
                 os.makedirs(args.texts_folder, exist_ok=True)
-                txt = download_txt(book_id, download_url, filename, args.texts_folder)
-                book_info.update({"texts_path": os.path.join(os.getcwd(), txt)})
+                txt_path = download_txt(book_id, download_url, filename, args.texts_folder)
+                book_info.update({"texts_path": os.path.join(os.getcwd(), txt_path)})
             books_info.append(book_info)
         except HTTPError:
             print("Такой книги не существует в природе")
