@@ -72,12 +72,9 @@ def parse_book_page(book_url):
 def main():
     urllib3.disable_warnings()
 
-    genre_page_url = "https://tululu.org/l55/1"
-    last_page = get_last_page(genre_page_url)
-
     parser = argparse.ArgumentParser(description="Качает книжки с сайта тулулу")
     parser.add_argument("--start_page", default=1, help="стартовая страница", type=int)
-    parser.add_argument("--end_page", default=last_page, help="конечная страница", type=int)
+    parser.add_argument("--end_page", default=get_last_page(), help="конечная страница", type=int)
     parser.add_argument("--texts_folder", default="books_texts", help="путь к текстам книг", type=str)
     parser.add_argument("--imgs_folder", default="books_images", help="путь к картинкам книг", type=str)
     parser.add_argument("--json_path", default=os.getcwd(), help="путь к json файлу с информацией о книгах", type=str)

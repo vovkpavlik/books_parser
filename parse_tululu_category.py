@@ -34,7 +34,9 @@ def get_books_id(start_page, end_page):
     return books_id
 
 
-def get_last_page(genre_page_url):
+def get_last_page():
+    genre_page_url = "https://tululu.org/l55/1"
+    
     response = requests.get(genre_page_url)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'lxml')
