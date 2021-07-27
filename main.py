@@ -69,6 +69,16 @@ def parse_book_page(book_url):
     return book_info
 
 
+def get_pages_count(genre_page):
+    response = requests.get(genre_page)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.text, 'lxml')
+
+    page_count = soup.select
+
+
+
+
 def main():
     urllib3.disable_warnings()
 
@@ -92,16 +102,16 @@ def main():
         
         try: 
             book_info = parse_book_page(book_url) 
-            books_info.append(parse_book_page(book_url))
+            books_info.append(book_info)
             img_url = book_info["img_url"]
             book_title = f"{book_id}.{book_info['title']}"
             filename = sanitize_filename(book_title)     
-            if not args.skip_imgs:
-                os.makedirs(args.imgs_folder, exist_ok=True)
-                download_img(img_url, filename, args.imgs_folder)
-            if not args.skip_texts:
-                os.makedirs(args.texts_folder, exist_ok=True)
-                download_txt(book_id, download_url, filename, args.texts_folder)
+            # if not args.skip_imgs:
+            #     os.makedirs(args.imgs_folder, exist_ok=True)
+            #     download_img(img_url, filename, args.imgs_folder)
+            # if not args.skip_texts:
+            #     os.makedirs(args.texts_folder, exist_ok=True)
+            #     download_txt(book_id, download_url, filename, args.texts_folder)
 
         except HTTPError:
             print("Такой книги не существует в природе")
