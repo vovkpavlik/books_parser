@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 from urllib3.exceptions import HTTPError
 
-from parse_tululu_category import get_books_id
+from parse_tululu_category import get_books_id, get_last_page
 
 
 def check_for_redirect(response):
@@ -69,22 +69,15 @@ def parse_book_page(book_url):
     return book_info
 
 
-def get_pages_count(genre_page):
-    response = requests.get(genre_page)
-    response.raise_for_status()
-    soup = BeautifulSoup(response.text, 'lxml')
-
-    page_count = soup.select
-
-
-
-
 def main():
     urllib3.disable_warnings()
 
+    genre_page_url = "https://tululu.org/l55/1"
+    last_page = get_last_page(genre_page_url)
+
     parser = argparse.ArgumentParser(description="Качает книжки с сайта тулулу")
     parser.add_argument("--start_page", default=1, help="стартовая страница", type=int)
-    parser.add_argument("--end_page", default=701, help="конечная страница", type=int)
+    parser.add_argument("--end_page", default=last_page, help="конечная страница", type=int)
     parser.add_argument("--texts_folder", default="books_texts", help="путь к текстам книг", type=str)
     parser.add_argument("--imgs_folder", default="books_images", help="путь к картинкам книг", type=str)
     parser.add_argument("--json_path", default=os.getcwd(), help="путь к json файлу с информацией о книгах", type=str)
@@ -98,7 +91,7 @@ def main():
  
     for book_id in books_id:
         download_url = "https://tululu.org/txt.php" 
-        book_url = f"https://tululu.org/b{book_id}/"       
+        book_url = f"https://tululu.org/b{book_id}/"     
         
         try: 
             book_info = parse_book_page(book_url) 
@@ -106,12 +99,12 @@ def main():
             img_url = book_info["img_url"]
             book_title = f"{book_id}.{book_info['title']}"
             filename = sanitize_filename(book_title)     
-            # if not args.skip_imgs:
-            #     os.makedirs(args.imgs_folder, exist_ok=True)
-            #     download_img(img_url, filename, args.imgs_folder)
-            # if not args.skip_texts:
-            #     os.makedirs(args.texts_folder, exist_ok=True)
-            #     download_txt(book_id, download_url, filename, args.texts_folder)
+            if not args.skip_imgs:
+                os.makedirs(args.imgs_folder, exist_ok=True)
+                download_img(img_url, filename, args.imgs_folder)
+            if not args.skip_texts:
+                os.makedirs(args.texts_folder, exist_ok=True)
+                download_txt(book_id, download_url, filename, args.texts_folder)
 
         except HTTPError:
             print("Такой книги не существует в природе")
